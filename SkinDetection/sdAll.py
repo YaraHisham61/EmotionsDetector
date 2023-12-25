@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import os
 
-input_directory = 'E:/Collage/Viola-Jones-master/faces'
-output_directory = 'E:/Collage/IP/Project/EmotionDetector/skOut'
+input_directory = 'E:/Collage/IP/ProjectMaterial/ls'
+output_directory = 'E:/Collage/IP/Project/EmotionDetector/newOut'
 
 # Loop through all files in the directory
 for filename in os.listdir(input_directory):
@@ -30,7 +30,12 @@ for filename in os.listdir(input_directory):
 
         # Find contours in the global_mask
         contours, _ = cv2.findContours(global_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if(len(contours) == 0 or max(cv2.contourArea(c) for c in contours) < (48 * 48)):
+        if(len(contours) == 0 or max(cv2.contourArea(c) for c in contours) < (60 * 60)):
+            
+            gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            destination_path = os.path.join(output_directory, filename)
+            cv2.imwrite(destination_path, gray_img)
+
             continue
         
         is_square_like = lambda cnt: abs(cv2.boundingRect(cnt)[2] / cv2.boundingRect(cnt)[3] - 1) < 0.5
@@ -39,7 +44,7 @@ for filename in os.listdir(input_directory):
         filtered_contours = [cnt for cnt in contours if is_square_like(cnt)]
         
         
-        if(len(filtered_contours) == 0 or max(cv2.contourArea(c) for c in filtered_contours) < (48 * 48) ):
+        if(len(filtered_contours) == 0 or max(cv2.contourArea(c) for c in filtered_contours) < (60 * 60) ):
             external_contour = max(contours, key=cv2.contourArea) 
         else :
         # Find the contour with maximum area among filtered contours

@@ -1,20 +1,28 @@
 import numpy as np
-from functools import partial
 from HaarCascade.haarLikeFeatures import HaarLikeFeature, FeatureType
-import progressbar
-from multiprocessing import Pool
-from tqdm import tqdm
-
-LOADING_BAR_LENGTH = 50
 
 class adaBoost : 
     def __init__(self,positive_images,negative_images) -> None:
+        """
+        Initializes an AdaBoost classifier.
+
+        Parameters:
+        - positive_images (List[numpy.ndarray]): List of positive images.
+        - negative_images (List[numpy.ndarray]): List of negative images.
+        """
+
         self.positive_images = positive_images
         self.negative_images = negative_images
         self.classifiers = []
         self.num_classifiers = 3
 
     def train (self):
+        """
+        Trains the AdaBoost classifier.
+
+        Returns:
+        - List[HaarLikeFeature]: List of Haar-like features.
+        """
         num_pos = len(self.positive_images)
         num_neg = len(self.negative_images)
         num_imgs = num_pos + num_neg
@@ -27,14 +35,10 @@ class adaBoost :
         # Initialize classifiers
         img_height = min(self.positive_images[0].shape[0] , self.negative_images[0].shape[0])
         img_width = min(self.positive_images[0].shape[1] , self.negative_images[0].shape[1])
-        min_feature_height = 1
-        max_feature_height = 10
-        min_feature_width = 1
-        max_feature_width = 10
 
         for _ in range(self.num_classifiers):
             # Create Haar-like features and select the best feature
-            features = self.create_features(img_height, img_width, min_feature_width, max_feature_width, min_feature_height, max_feature_height)
+            features = self.create_features(img_height, img_width, 1,3,1, 3)
 
             feature, feature_weight, self.weights = self.select_best_feature(self.positive_images + self.negative_images, self.weights, labels, features)
 
@@ -44,23 +48,32 @@ class adaBoost :
         return self.classifiers
 
 
-    def create_features(self, img_height, img_width, min_feature_width, max_feature_width, min_feature_height, max_feature_height, step_size=10):
-        features = []
-        total_iterations = len(FeatureType) * ((max_feature_width - min_feature_width) // FeatureType.TWO_VERTICAL.value[0]) * \
-                        ((max_feature_height - min_feature_height) // FeatureType.TWO_VERTICAL.value[1]) * \
-                        (img_width - max_feature_width) * (img_height - max_feature_height)
+    def create_features(self, img_height, img_width, min_feature_width, max_feature_width, min_feature_height, max_feature_height):
+        """
+        Creates Haar-like features of different sizes and types.
 
-        with tqdm(total=total_iterations, desc="Creating Haar-like Features") as pbar:
-            for feature_type in FeatureType:
-                feature_start_width = max(min_feature_width, feature_type.value[0])
-                for feature_width in range(feature_start_width, max_feature_width, feature_type.value[0]):
-                    feature_start_height = max(min_feature_height, feature_type.value[1])
-                    for feature_height in range(feature_start_height, max_feature_height, feature_type.value[1]):
-                        for x in range(0, img_width - feature_width, step_size):
-                            for y in range(0, img_height - feature_height, step_size):
-                                features.append(HaarLikeFeature(feature_type, x, y, feature_width, feature_height, 0, 1))
-                                features.append(HaarLikeFeature(feature_type, x, y, feature_width, feature_height, 0, -1))
-                                pbar.update(1)
+        Parameters:
+        - img_height (int): Height of the images.
+        - img_width (int): Width of the images.
+        - min_feature_width (int): Minimum width of the features.
+        - max_feature_width (int): Maximum width of the features.
+        - min_feature_height (int): Minimum height of the features.
+        - max_feature_height (int): Maximum height of the features.
+
+        Returns:
+        - List[HaarLikeFeature]: List of Haar-like features.
+        """
+        features = []
+        total_iterations = 100000
+        for feature_type in FeatureType:
+            feature_start_width = max(min_feature_width, feature_type.value[0])
+            for feature_width in range(feature_start_width, max_feature_width, feature_type.value[0]):
+                feature_start_height = max(min_feature_height, feature_type.value[1])
+                for feature_height in range(feature_start_height, max_feature_height, feature_type.value[1]):
+                    for x in range(0, img_width - feature_width):
+                        for y in range(0, img_height - feature_height):
+                            features.append(HaarLikeFeature(feature_type, x, y, feature_width, feature_height, 0, 1))
+                            features.append(HaarLikeFeature(feature_type, x, y, feature_width, feature_height, 0, -1))
 
         return features
 

@@ -1,5 +1,8 @@
 import cv2 as cv2
 import numpy as np
+from skimage import io
+from commonFunctions import *
+
 
 class SkinDetector:
     def __init__(self,img_path) :
@@ -9,11 +12,18 @@ class SkinDetector:
         Parameters:
         - img (np.array): image to detect the skin from it.
         """
-        self.img=cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        self.img=io.imread(img_path,as_gray=True)
         self.skOut =cv2.imread(img_path)
 
 
     def detect (self) :
+        """
+        Detects the skin from the image.
+
+        Returns:
+        - np.array: image with the skin detected.
+        """
+        
         #converting from gbr to hsv color space
         img_HSV = cv2.cvtColor(self.skOut, cv2.COLOR_BGR2HSV)
         #skin color range for hsv color space 
@@ -36,34 +46,45 @@ class SkinDetector:
         global_result=cv2.bitwise_not(global_mask)
 
         contours, _ = cv2.findContours(global_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if len(contours) > 0:
+        if len(contours) == 0 or max(cv2.contourArea(c) for c in contours) < (60 * 60):
+            self.img = self.img
+        
+        else:
             for contour in contours: 
                 x, y, w, h = cv2.boundingRect(contour)
                 cv2.rectangle(self.skOut, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Draw rectangle around external contour
 
             is_square_like = lambda cnt: abs(cv2.boundingRect(cnt)[2] / cv2.boundingRect(cnt)[3] - 1) < 0.5
 
-            # Filter contours based on the square-like condition
+                # Filter contours based on the square-like condition
             filtered_contours = [cnt for cnt in contours if is_square_like(cnt)]
+            if(len(filtered_contours) == 0 or max(cv2.contourArea(c) for c in filtered_contours) < (60 * 60) ):
+                external_contour = max(contours, key=cv2.contourArea)
+            else:
+                # Find the contour with maximum area among filtered contours
+                external_contour = max(filtered_contours, key=cv2.contourArea)
 
-            # Find the contour with maximum area among filtered contours
-            external_contour = max(filtered_contours, key=cv2.contourArea)
-
-            # Extract bounding box
+                # Extract bounding box
             x, y, w, h = cv2.boundingRect(external_contour)
-
-            # Crop the image
+            cv2.rectangle(self.skOut, (x, y), (x + w, y + h), (0,0, 255), 10)
+                # Crop the image
+            
             self.img = self.img[y:y + h, x:x + w]
 
-        cv2.imwrite ("SkinDetection/haar_cascade_in.jpg", self.img)
-        cv2.imwrite ("SkinDetection/skin_detect_out.jpg", self.skOut)
-        cv2.imwrite ("SkinDetection/1_HSV.jpg",HSV_result)
-        cv2.imwrite ("SkinDetection/2_YCbCr.jpg",YCrCb_result)
-        cv2.imwrite ("SkinDetection/3_global_result.jpg",global_result)
+        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/skin_detect_out.jpg", self.skOut)
+        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/1_HSV.jpg",HSV_result)
+        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/2_YCbCr.jpg",YCrCb_result)
+        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/3_global_result.jpg",global_result)
 
-        # self.img = cv2.resize(self.img, (48, 48))
-        self.img = np.array(self.img, dtype=np.float64) / 255.0
+        # self.img = (self.img * 255).astype(np.uint8)
+        # self.img = image_resize(self.img, width = 48, height = 48, inter = cv2.INTER_AREA)
+        self.img = cv2.resize(self.img, (48, 48), interpolation = cv2.INTER_AREA)
 
+    
+        print(self.img.shape)
+        io.imsave ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/haar_cascade_in.png", (self.img * 255).astype(np.uint8))
+
+        
 
 
 if __name__ == "__main__":
