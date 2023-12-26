@@ -2,14 +2,11 @@ from flask import Flask, jsonify
 from flask_cors import CORS  # Import the CORS module
 from flask import request
 from PIL import Image
-import base64
 import HaarCascade.integralImage as int_img
 from SkinDetection.skinDetector import SkinDetector
 from commonFunctions import *
-import pickle
 from skimage import io
 from joblib import load
-
 from main import load_classifiers
 
 app = Flask(__name__)
@@ -18,7 +15,8 @@ CORS(app)  # Enable CORS for all routes
 app.config['SAVE_PATH'] = 'my_trained_classifiers_sd.pkl'
 app.config['CLF'] = load('EmotionsModel/rbf.joblib')
 app.config['CLASSIFIERS'] = load_classifiers(app.config['SAVE_PATH'])
-app.config['PHOTO_PATH'] = 'E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/imgR.jpg'
+app.config['PHOTO_PATH'] = 'D:/Collage/IP/EmotionsDetector/SkinDetection/imgR.jpg'
+app.config['OUT_PATH'] = 'D:/Collage/IP/EmotionsDetector/SkinDetection/haar_cascade_in.png'
 
 @app.route('/')
 def hello_world():
@@ -46,7 +44,7 @@ def image():
         result = [3]
     else:
         print("face")
-        img = io.imread("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/haar_cascade_in.png")
+        img = io.imread(app.config['OUT_PATH'])
         img = img.flatten()
         result = app.config['CLF'].predict([img])
 

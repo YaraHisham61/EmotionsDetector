@@ -71,10 +71,10 @@ class SkinDetector:
             
             self.img = self.img[y:y + h, x:x + w]
 
-        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/skin_detect_out.jpg", self.skOut)
-        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/1_HSV.jpg",HSV_result)
-        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/2_YCbCr.jpg",YCrCb_result)
-        cv2.imwrite ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/3_global_result.jpg",global_result)
+        cv2.imwrite ("D:/Collage/IP/EmotionsDetector/SkinDetection/skin_detect_out.jpg", self.skOut)
+        cv2.imwrite ("D:/Collage/IP/EmotionsDetector/SkinDetection/1_HSV.jpg",HSV_result)
+        cv2.imwrite ("D:/Collage/IP/EmotionsDetector/SkinDetection/2_YCbCr.jpg",YCrCb_result)
+        cv2.imwrite ("D:/Collage/IP/EmotionsDetector/SkinDetection/3_global_result.jpg",global_result)
 
         # self.img = (self.img * 255).astype(np.uint8)
         # self.img = image_resize(self.img, width = 48, height = 48, inter = cv2.INTER_AREA)
@@ -82,7 +82,7 @@ class SkinDetector:
 
     
         print(self.img.shape)
-        io.imsave ("E:/Collage/IP/Project/EmotionDetector/EmotionsDetector/SkinDetection/haar_cascade_in.png", (self.img * 255).astype(np.uint8))
+        io.imsave ("D:/Collage/IP/EmotionsDetector/SkinDetection/haar_cascade_in.png", (self.img * 255).astype(np.uint8))
 
         
 

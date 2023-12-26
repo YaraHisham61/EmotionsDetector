@@ -12,7 +12,7 @@ def load_classifiers(file_path):
     return classifiers
 
 def get_img_path ():
-    return 'SkinDetection/not.jpg'
+    return 'SkinDetection/mic.jpg'
      
 
 if __name__ == "__main__":
