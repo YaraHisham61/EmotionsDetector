@@ -20,17 +20,15 @@ This app is based on taking or picking up photos and detecting which it's a face
   - Skin detection algorithms typically involve color thresholding in specific color spaces, We combined HSV and YCbCr
   results. The algorithm identifies pixels with color values within a predefined range that corresponds to skin tones. 
 - Haar Cascade
-  - The Haar Cascade algorithm is a machine learning-based object detection method used to identify objects or 
+  - We used it for face detection. The Haar Cascade algorithm is a machine learning-based object detection method used to identify objects or 
   features in images. It employs a cascade of simple classifiers trained on positive and negative samples. The 
   algorithm evaluates image regions at multiple scales and resolutions, using Haar-like features to distinguish 
-  between the object and the background. Training involves adjusting weights for these features. While widely 
-  used for face detection, Haar Cascade can be trained for various objects, making it versatile in applications 
-  like security surveillance and robotics.
+  between the object and the background. Training involves adjusting weights for these features.
 - SVM (RBF)
   - Support Vector Machines (SVM) with Radial Basis Function (RBF) kernel is a popular machine learning 
   algorithm used for classification and regression tasks. The RBF kernel allows SVM to handle non-linear 
   relationships between input features. The SVM with RBF kernel is particularly effective in capturing complex 
-  patterns and is widely used in image recognition due to its ability to handle diverse and non-linear data.
+  patterns and is widely used in image recognition due to its ability to handle diverse and non-linear data. We used for the emotion detection model
 ## <img src="https://github.com/YaraHisham61/EmotionsDetector/assets/88517271/6726d0d6-d0e6-4b7d-942a-3e03430ccbb8" width="30" height="30" /> Experiment results <a name = "res"></a>
 - Skin Detection
   - As it is a color thresholding algorithm, relying solely on color information, it is not highly 
@@ -51,7 +49,7 @@ This app is based on taking or picking up photos and detecting which it's a face
     - Non-faces accuracy: 50 %
 - Model Training
   - At first, We started discarding some model trainers such as SVM by Sigmoid as we needed more than 
-  two classes while the sigmoid function classifies between only 2 classes. We started as first step with data 
+  two classes while the Sigmoid function classifies between only 2 classes. We started as first step with data 
   preprocessing or data cleaning. Then we started with 7 classes to classify but some emotions may cause conflicts with others so we tried to decrease the number of classes to increase the 
   validation accuracy the emotions that conflict like sad and disgust` decrease the accuracy of the model we chose only three emotions (Happy – Sad – Surprised ) and we trained using SVM with 
   RBF kernel why this kernel because as mentioned it allows SVM to handle non-linear relationships 
